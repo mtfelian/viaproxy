@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-// ProxyConnector is a proxy connector
-type ProxyConnector interface {
-	AddProxyAddr(string)
+// Connector is a proxy connector
+type Connector interface {
+	AddProxyAddr(addr string)
 	GetProxyAddr() string
-	RemoveProxyAddr(int)
-	DoRequest(string, string, io.Reader) (*http.Response, error)
+	RemoveProxyAddr(i int)
+	DoRequest(method string, url string, body io.Reader) (*http.Response, error)
 }

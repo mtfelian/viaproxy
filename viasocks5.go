@@ -23,7 +23,7 @@ var regexpIP4 = regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.` +
 func init() { rand.Seed(time.Now().UnixNano()) }
 
 // NewViaSOCKS5 returns a new proxy connector via SOCKS5
-func NewViaSOCKS5() ProxyConnector { return &viaSOCKS5{} }
+func NewViaSOCKS5() Connector { return &viaSOCKS5{} }
 
 // viaSOCKS5 can made requests via SOCKS5 proxy
 type viaSOCKS5 struct {
