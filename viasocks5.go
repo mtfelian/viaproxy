@@ -49,20 +49,23 @@ func (r *viaSOCKS5) GetProxyAddr() string {
 }
 
 // RemoveProxyAddr removes i-th proxy from list
-func (r *viaSOCKS5) RemoveProxyAddr(i int) {
+func (r *viaSOCKS5) RemoveProxyAddr(addr string) {
 	r.Lock()
 	defer r.Unlock()
-	if i < 0 || i > len(r.Proxies)-1 {
-		return
+	for i, proxy := range r.Proxies {
+		if proxy == addr {
+			r.Proxies = append(r.Proxies[:i], r.Proxies[i+1:]...)
+			return
+		}
 	}
-	r.Proxies = append(r.Proxies[:i], r.Proxies[i+1:]...)
 }
 
 // DoRequest makes a new HTTP request via random proxy from list and returns a response
-func (r *viaSOCKS5) DoRequest(method, url string, body io.Reader) (*http.Response, error) {
-	dialer, err := proxy.SOCKS5("tcp", r.GetProxyAddr(), nil, proxy.Direct)
+func (r *viaSOCKS5) DoRequest(method, url string, body io.Reader) (Response, error) {
+	response := Response{ProxyAddr: r.GetProxyAddr()}
+	dialer, err := proxy.SOCKS5("tcp", response.ProxyAddr, nil, proxy.Direct)
 	if err != nil {
-		return nil, err
+		return Response{}, err
 	}
 
 	httpTransport := &http.Transport{}
@@ -71,10 +74,12 @@ func (r *viaSOCKS5) DoRequest(method, url string, body io.Reader) (*http.Respons
 		return dialer.Dial(network, addr)
 	}
 
-	req, err := http.NewRequest(method, url, body)
+	request, err := http.NewRequest(method, url, body)
 	if err != nil {
-		return nil, err
+		return response, err
 	}
 
-	return httpClient.Do(req)
+	httpResponse, err := httpClient.Do(request)
+	response.Response = httpResponse
+	return response, err
 }

@@ -18,14 +18,15 @@ func (r *viaNoProxy) AddProxyAddr(_ string) {}
 func (r *viaNoProxy) GetProxyAddr() string { return "" }
 
 // RemoveProxyAddr does nothing
-func (r *viaNoProxy) RemoveProxyAddr(i int) {}
+func (r *viaNoProxy) RemoveProxyAddr(addr string) {}
 
 // DoRequest makes a new HTTP request via random proxy from list and returns a response
-func (r *viaNoProxy) DoRequest(method, url string, body io.Reader) (*http.Response, error) {
-	req, err := http.NewRequest(method, url, body)
+func (r *viaNoProxy) DoRequest(method, url string, body io.Reader) (Response, error) {
+	request, err := http.NewRequest(method, url, body)
 	if err != nil {
-		return nil, err
+		return Response{}, err
 	}
 
-	return http.DefaultClient.Do(req)
+	httpResponse, err := http.DefaultClient.Do(request)
+	return Response{Response: httpResponse}, err
 }
