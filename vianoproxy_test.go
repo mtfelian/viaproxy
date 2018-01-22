@@ -11,7 +11,7 @@ import (
 )
 
 var _ = Describe("testing connection via no proxy", func() {
-	viaProxy := viaproxy.NewViaNoProxy()
+	viaProxy := viaproxy.NewViaNoProxy(nil)
 
 	It("tests connection without proxy", func() {
 		resp, err := viaProxy.DoRequest(http.MethodGet, mServer.URL+"/", nil, time.Second)

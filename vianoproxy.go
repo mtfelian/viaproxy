@@ -7,10 +7,10 @@ import (
 )
 
 // NewViaNoProxy returns a new proxy connector via no proxy
-func NewViaNoProxy() Connector { return &viaNoProxy{} }
+func NewViaNoProxy(headers http.Header) Connector { return &viaNoProxy{headers: headers} }
 
 // viaNoProxy can made requests via no proxy
-type viaNoProxy struct{}
+type viaNoProxy struct{ headers http.Header }
 
 // AddProxyAddr does nothing
 func (r *viaNoProxy) AddProxyAddr(_ ...string) {}
@@ -27,6 +27,7 @@ func (r *viaNoProxy) DoRequest(method, url string, body io.Reader, timeout time.
 	if err != nil {
 		return Response{}, err
 	}
+	request.Header = r.headers
 
 	httpResponse, err := (&http.Client{Timeout: timeout}).Do(request)
 	return Response{Response: httpResponse}, err

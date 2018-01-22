@@ -16,7 +16,7 @@ import (
 )
 
 var _ = Describe("testing connection via SOCKS5 proxy", func() {
-	viaProxy := viaproxy.NewViaSOCKS5()
+	viaProxy := viaproxy.NewViaSOCKS5(nil)
 
 	// startSOCKS5Server
 	startSOCKS5Server := func() {
