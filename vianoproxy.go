@@ -13,7 +13,7 @@ func NewViaNoProxy() Connector { return &viaNoProxy{} }
 type viaNoProxy struct{}
 
 // AddProxyAddr does nothing
-func (r *viaNoProxy) AddProxyAddr(_ string) {}
+func (r *viaNoProxy) AddProxyAddr(_ ...string) {}
 
 // GetProxyAddr does nothing
 func (r *viaNoProxy) GetProxyAddr() string { return "" }

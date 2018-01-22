@@ -32,13 +32,15 @@ type viaSOCKS5 struct {
 }
 
 // AddProxyAddr with addr with format like IPv4:port
-func (r *viaSOCKS5) AddProxyAddr(addr string) {
-	if !regexp.MustCompile(fmt.Sprintf(`^%s:\d{3,5}$`, regexpIP4)).MatchString(addr) {
-		return
+func (r *viaSOCKS5) AddProxyAddr(addr ...string) {
+	for _, address := range addr {
+		if !regexp.MustCompile(fmt.Sprintf(`^%s:\d{3,5}$`, regexpIP4)).MatchString(address) {
+			continue
+		}
+		r.Lock()
+		r.Proxies = append(r.Proxies, address)
+		r.Unlock()
 	}
-	r.Lock()
-	r.Proxies = append(r.Proxies, addr)
-	r.Unlock()
 }
 
 // GetProxyAddr returns random proxy addr from the list
