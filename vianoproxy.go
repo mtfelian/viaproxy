@@ -3,6 +3,7 @@ package viaproxy
 import (
 	"io"
 	"net/http"
+	"time"
 )
 
 // NewViaNoProxy returns a new proxy connector via no proxy
@@ -21,12 +22,12 @@ func (r *viaNoProxy) GetProxyAddr() string { return "" }
 func (r *viaNoProxy) RemoveProxyAddr(addr string) {}
 
 // DoRequest makes a new HTTP request via random proxy from list and returns a response
-func (r *viaNoProxy) DoRequest(method, url string, body io.Reader) (Response, error) {
+func (r *viaNoProxy) DoRequest(method, url string, body io.Reader, timeout time.Duration) (Response, error) {
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return Response{}, err
 	}
 
-	httpResponse, err := http.DefaultClient.Do(request)
+	httpResponse, err := (&http.Client{Timeout: timeout}).Do(request)
 	return Response{Response: httpResponse}, err
 }

@@ -52,8 +52,8 @@ func (r *viaSOCKS5) GetProxyAddr() string {
 func (r *viaSOCKS5) RemoveProxyAddr(addr string) {
 	r.Lock()
 	defer r.Unlock()
-	for i, proxy := range r.Proxies {
-		if proxy == addr {
+	for i, proxyAddr := range r.Proxies {
+		if proxyAddr == addr {
 			r.Proxies = append(r.Proxies[:i], r.Proxies[i+1:]...)
 			return
 		}
@@ -61,7 +61,7 @@ func (r *viaSOCKS5) RemoveProxyAddr(addr string) {
 }
 
 // DoRequest makes a new HTTP request via random proxy from list and returns a response
-func (r *viaSOCKS5) DoRequest(method, url string, body io.Reader) (Response, error) {
+func (r *viaSOCKS5) DoRequest(method, url string, body io.Reader, timeout time.Duration) (Response, error) {
 	response := Response{ProxyAddr: r.GetProxyAddr()}
 	dialer, err := proxy.SOCKS5("tcp", response.ProxyAddr, nil, proxy.Direct)
 	if err != nil {
@@ -69,7 +69,6 @@ func (r *viaSOCKS5) DoRequest(method, url string, body io.Reader) (Response, err
 	}
 
 	httpTransport := &http.Transport{}
-	httpClient := &http.Client{Transport: httpTransport}
 	httpTransport.DialContext = func(_ context.Context, network, addr string) (net.Conn, error) {
 		return dialer.Dial(network, addr)
 	}
@@ -79,7 +78,7 @@ func (r *viaSOCKS5) DoRequest(method, url string, body io.Reader) (Response, err
 		return response, err
 	}
 
-	httpResponse, err := httpClient.Do(request)
+	httpResponse, err := (&http.Client{Transport: httpTransport, Timeout: timeout}).Do(request)
 	response.Response = httpResponse
 	return response, err
 }

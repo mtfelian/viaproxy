@@ -58,7 +58,7 @@ var _ = Describe("testing connection via SOCKS5 proxy", func() {
 	})
 
 	It("tests connection via proxy", func() {
-		resp, err := viaProxy.DoRequest(http.MethodGet, mServer.URL+"/", nil)
+		resp, err := viaProxy.DoRequest(http.MethodGet, mServer.URL+"/", nil, time.Second)
 		Expect(err).NotTo(HaveOccurred())
 		b, err := ioutil.ReadAll(resp.Body)
 		Expect(err).NotTo(HaveOccurred())
