@@ -9,21 +9,3 @@
 It provides the interface `Connector` and two implementations:
 `viaSOCKS5` and `viaNoProxy`.
 
-See the usage example below.
-
-```
-	var proxyConnector viaproxy.Connector
-	validProxyAddresses := validProxies()
-	if len(validProxyAddresses) == 0 {
-		proxyConnector = viaproxy.NewViaNoProxy()
-	} else {
-		proxyConnector = viaproxy.NewViaSOCKS5()
-		proxyConnector.AddProxyAddr(validProxyAddresses...)
-	}
-
-	entity.Parse(specific.New(proxyConnector))
-
-	...
-
-	response, err := p.Connector().DoRequest(http.MethodGet, url, nil, 2*time.Second)
-```
