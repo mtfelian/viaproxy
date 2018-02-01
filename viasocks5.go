@@ -30,6 +30,21 @@ type viaSOCKS5 struct {
 	sync.Mutex
 	headers http.Header
 	proxies []string
+	eCount  sync.Map
+}
+
+// ErrorsAtAddr returns requests error counter
+func (r *viaSOCKS5) ErrorsCount(addr string, inc bool) int {
+	errCount := 0
+	c, ok := r.eCount.Load(addr)
+	if ok {
+		errCount = c.(int)
+	}
+	if inc {
+		errCount++
+		r.eCount.Store(addr, errCount)
+	}
+	return errCount
 }
 
 // AddProxyAddr with addr with format like IPv4:port
